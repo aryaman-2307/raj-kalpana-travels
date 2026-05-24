@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function AboutPreview() {
   return (
     <section className="py-20 md:py-24 bg-white">
@@ -5,25 +7,13 @@ export default function AboutPreview() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left — Image Placeholder */}
           <div className="relative">
-            <div className="relative h-[400px] md:h-[460px] rounded-3xl overflow-hidden bg-gradient-to-br from-navy via-navy-light to-navy">
-              {/* Decorative pattern overlay */}
-              <div className="absolute inset-0 opacity-10">
-                <svg className="w-full h-full" viewBox="0 0 400 400" fill="none">
-                  <circle cx="200" cy="200" r="150" stroke="white" strokeWidth="0.5" />
-                  <circle cx="200" cy="200" r="120" stroke="white" strokeWidth="0.5" />
-                  <circle cx="200" cy="200" r="90" stroke="white" strokeWidth="0.5" />
-                  <circle cx="200" cy="200" r="60" stroke="white" strokeWidth="0.5" />
-                </svg>
-              </div>
-              {/* Center icon */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <svg className="w-20 h-20 text-white/30 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-                  </svg>
-                  <p className="text-white/40 text-sm font-medium">Our Fleet</p>
-                </div>
-              </div>
+            <div className="relative h-[400px] md:h-[460px] rounded-3xl overflow-hidden shadow-2xl border border-border/50">
+              <Image
+                src="/gallery/bus-side.png"
+                alt="Raj Kalpana Travels Fleet"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-700"
+              />
             </div>
 
             {/* Floating Stats Card */}

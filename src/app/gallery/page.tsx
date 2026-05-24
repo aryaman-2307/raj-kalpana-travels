@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { GALLERY_IMAGES } from '@/data/gallery';
 import type { GalleryImage } from '@/types';
 
@@ -76,18 +77,15 @@ export default function GalleryPage() {
                   key={image.id}
                   className="group rounded-2xl overflow-hidden border border-[#E2E8F0] bg-white shadow-sm hover:shadow-lg transition-shadow"
                 >
-                  {/* Gradient placeholder since no real images */}
-                  <div
-                    className={`aspect-[4/3] bg-gradient-to-br ${gradientColors[image.category]} flex items-center justify-center relative`}
-                    role="img"
-                    aria-label={image.alt}
-                  >
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="opacity-40">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                    <span className="absolute bottom-3 right-3 bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-lg capitalize">
+                  {/* Image */}
+                  <div className="aspect-[4/3] relative">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-lg capitalize">
                       {image.category}
                     </span>
                   </div>
