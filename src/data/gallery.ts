@@ -31,4 +31,34 @@ export const GALLERY_IMAGES: GalleryImage[] = [
     alt: 'Clean and spacious bus interior aisle and ambient lighting',
     category: 'interior',
   },
+  {
+    id: 'gallery-06',
+    src: '/gallery/seat-back.png',
+    alt: 'Comfortable seats with water bottle holders',
+    category: 'seats',
+  },
+  {
+    id: 'gallery-07',
+    src: '/gallery/seat-lights.png',
+    alt: 'Individual reading lights and mobile holders',
+    category: 'interior',
+  },
+  {
+    id: 'gallery-08',
+    src: '/gallery/washbasin.png',
+    alt: 'On-board washbasin with LED mirror',
+    category: 'interior',
+  },
+  {
+    id: 'gallery-09',
+    src: '/gallery/usb-charging.png',
+    alt: 'Dual USB charging ports at every seat',
+    category: 'interior',
+  },
+  {
+    id: 'gallery-10',
+    src: '/gallery/cctv.png',
+    alt: 'On-board CCTV cameras for passenger safety',
+    category: 'interior',
+  },
 ];
