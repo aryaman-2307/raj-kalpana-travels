@@ -1,32 +1,83 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ROUTES } from '@/data/routes';
 import Link from 'next/link';
-import { Suspense } from 'react';
+
+interface ApiRoute {
+  id: number;
+  name: string;
+  number: string;
+  dep_time: string;
+  arr_time: string;
+  duration: string;
+  fare_str: string;
+  bus_type: string;
+  available_seats: number;
+  boarding_point_details: any[];
+  drop_off_details: any[];
+}
 
 function SearchResultsContent() {
   const searchParams = useSearchParams();
-  const from = searchParams.get('from') || '';
-  const to = searchParams.get('to') || '';
+  const fromId = searchParams.get('fromId') || '';
+  const toId = searchParams.get('toId') || '';
+  const fromName = searchParams.get('fromName') || searchParams.get('from') || '';
+  const toName = searchParams.get('toName') || searchParams.get('to') || '';
   const date = searchParams.get('date') || '';
+  
+  const [routes, setRoutes] = useState<ApiRoute[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
   const [sortBy, setSortBy] = useState<'price' | 'departure'>('price');
   const [busTypeFilter, setBusTypeFilter] = useState('all');
 
+  useEffect(() => {
+    async function fetchRoutes() {
+      if (!fromId || !toId || !date) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError('');
+        const res = await fetch(`/api/search?action=available_routes&origin=${fromId}&destination=${toId}&date=${date}`);
+        const data = await res.json();
+
+        if (data && data.result) {
+          setRoutes(data.result);
+        } else {
+          setError('No routes found or API error.');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch routes.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRoutes();
+  }, [fromId, toId, date]);
+
   const results = useMemo(() => {
-    let filtered = ROUTES.filter(
-      (r) => r.from.toLowerCase() === from.toLowerCase() && r.to.toLowerCase() === to.toLowerCase()
-    );
+    let filtered = routes;
     if (busTypeFilter !== 'all') {
       filtered = filtered.filter((r) => r.busType === busTypeFilter);
     }
-    return filtered.sort((a, b) =>
-      sortBy === 'price' ? a.price - b.price : a.departureTime.localeCompare(b.departureTime)
-    );
-  }, [from, to, sortBy, busTypeFilter]);
+    return filtered.sort((a, b) => {
+      if (sortBy === 'price') {
+        const priceA = parseFloat(a.fare_str) || 0;
+        const priceB = parseFloat(b.fare_str) || 0;
+        return priceA - priceB;
+      }
+      return a.dep_time.localeCompare(b.dep_time);
+    });
+  }, [routes, sortBy, busTypeFilter]);
 
-  const busTypes = [...new Set(ROUTES.map((r) => r.busType))];
+  const busTypes = [...new Set(routes.map((r) => r.busType))];
 
   return (
     <section className="min-h-screen bg-[#F8FAFC]">
@@ -36,7 +87,7 @@ function SearchResultsContent() {
             <Link href="/" className="hover:text-white">Home</Link> / <Link href="/booking" className="hover:text-white">Booking</Link> / <span className="text-white">Results</span>
           </nav>
           <h1 className="text-3xl md:text-4xl font-bold font-[family-name:var(--font-plus-jakarta-sans)]">
-            {from} → {to}
+            {fromName} → {toName}
           </h1>
           {date && <p className="mt-2 text-white/70">Travel date: {new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>}
         </div>
@@ -62,17 +113,27 @@ function SearchResultsContent() {
           <p className="text-sm text-[#64748B] ml-auto self-center">{results.length} bus{results.length !== 1 ? 'es' : ''} found</p>
         </div>
 
-        {/* Results */}
-        {results.length === 0 ? (
+        {/* Loading / Error States */}
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="w-10 h-10 border-4 border-[#E2E8F0] border-t-[#E53935] rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-[#64748B]">Searching for buses on TicketSimply...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20 bg-white rounded-2xl border border-red-100">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Oops!</h2>
+            <p className="text-[#64748B] mb-6">{error}</p>
+            <Link href="/" className="px-6 py-3 bg-[#E53935] text-white rounded-full font-semibold hover:bg-[#C62828] transition-colors">Search Again</Link>
+          </div>
+        ) : results.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-[#E2E8F0]">
             <svg className="w-16 h-16 text-[#E2E8F0] mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <h2 className="text-xl font-bold text-[#1E293B] mb-2">No buses found</h2>
             <p className="text-[#64748B] mb-6">Try a different route or date.</p>
-            <Link href="/booking" className="px-6 py-3 bg-[#E53935] text-white rounded-full font-semibold hover:bg-[#C62828] transition-colors">Search Again</Link>
+            <Link href="/" className="px-6 py-3 bg-[#E53935] text-white rounded-full font-semibold hover:bg-[#C62828] transition-colors">Search Again</Link>
           </div>
         ) : (
           <div className="space-y-4">
-            {/* NOTE: Mock data for display only. Real prices and availability must come from backend API. */}
             {results.map((route) => (
               <div key={route.id} className="bg-white rounded-2xl border border-[#E2E8F0] p-6 hover:shadow-lg hover:border-[#E53935]/30 transition-all duration-300">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -82,8 +143,8 @@ function SearchResultsContent() {
                     </span>
                     <div className="flex items-center gap-4 mt-2">
                       <div>
-                        <p className="text-2xl font-bold text-[#1E293B]">{route.departureTime}</p>
-                        <p className="text-sm text-[#64748B]">{route.from}</p>
+                        <p className="text-2xl font-bold text-[#1E293B]">{route.dep_time}</p>
+                        <p className="text-sm text-[#64748B]">{fromName}</p>
                       </div>
                       <div className="flex-1 flex items-center gap-2 px-2">
                         <div className="flex-1 border-t-2 border-dashed border-[#E2E8F0]" />
@@ -91,24 +152,23 @@ function SearchResultsContent() {
                         <div className="flex-1 border-t-2 border-dashed border-[#E2E8F0]" />
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-[#1E293B]">{route.arrivalTime}</p>
-                        <p className="text-sm text-[#64748B]">{route.to}</p>
+                        <p className="text-2xl font-bold text-[#1E293B]">{route.arr_time}</p>
+                        <p className="text-sm text-[#64748B]">{toName}</p>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {route.amenities.map((a) => (
-                        <span key={a} className="text-xs bg-[#F8FAFC] text-[#64748B] px-2 py-1 rounded-md border border-[#E2E8F0]">{a}</span>
-                      ))}
+                    
+                    <div className="mt-3 text-sm text-[#64748B]">
+                      <span className="font-semibold text-green-600">{route.available_seats} Seats Available</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2 lg:min-w-[160px]">
-                    <p className="text-3xl font-bold text-[#E53935]">₹{route.price}</p>
+                    <p className="text-3xl font-bold text-[#E53935]">₹{parseFloat(route.fare_str) || route.fare_str}</p>
                     <p className="text-xs text-[#64748B]">per seat</p>
                     <button
-                      onClick={() => alert('Seat selection requires backend integration. This is a demo.')}
+                      onClick={() => alert('Phase 2: Booking flow will go here. For now, redirecting to WhatsApp!')}
                       className="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-[#E53935] to-[#C62828] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/25 transition-all"
                     >
-                      Select Seat
+                      Book Ticket
                     </button>
                   </div>
                 </div>

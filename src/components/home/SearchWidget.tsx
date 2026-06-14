@@ -1,40 +1,61 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 
-const CITIES = [
-  'Delhi',
-  'Lucknow',
-  'Varanasi',
-  'Agra',
-  'Kanpur',
-  'Ujjain',
-  'Jaipur',
-  'Prayagraj',
-  'Gorakhpur',
-  'Ayodhya',
-  'Mathura',
-  'Bareilly',
-];
+interface CityOption {
+  id: string;
+  name: string;
+}
 
 export default function SearchWidget() {
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [fromId, setFromId] = useState('');
+  const [toId, setToId] = useState('');
   const [date, setDate] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const [cities, setCities] = useState<CityOption[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const today = new Date().toISOString().split('T')[0];
 
+  useEffect(() => {
+    async function fetchDestinations() {
+      try {
+        const res = await fetch('/api/search?action=destination_pairs');
+        const data = await res.json();
+        
+        if (data && data.body) {
+           const cityMap = new Map<string, string>();
+           data.body.forEach((pair: any) => {
+             if (pair.origin) cityMap.set(pair.origin.id.toString(), pair.origin.name);
+             if (pair.destination) cityMap.set(pair.destination.id.toString(), pair.destination.name);
+           });
+           
+           const uniqueCities = Array.from(cityMap.entries())
+             .map(([id, name]) => ({ id, name }))
+             .sort((a, b) => a.name.localeCompare(b.name));
+             
+           setCities(uniqueCities);
+        }
+      } catch (err) {
+        console.error('Failed to fetch destinations', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDestinations();
+  }, []);
+
   function swapCities() {
-    setFrom(to);
-    setTo(from);
+    setFromId(toId);
+    setToId(fromId);
   }
 
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
-    if (!from) newErrors.from = 'Please select a departure city';
-    if (!to) newErrors.to = 'Please select a destination city';
-    if (from && to && from === to) newErrors.to = 'Destination must be different from departure';
+    if (!fromId) newErrors.from = 'Please select a departure city';
+    if (!toId) newErrors.to = 'Please select a destination city';
+    if (fromId && toId && fromId === toId) newErrors.to = 'Destination must be different from departure';
     if (!date) newErrors.date = 'Please select a travel date';
     if (date && date < today) newErrors.date = 'Date cannot be in the past';
     setErrors(newErrors);
@@ -44,7 +65,16 @@ export default function SearchWidget() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (validate()) {
-      const params = new URLSearchParams({ from, to, date });
+      const fromName = cities.find(c => c.id === fromId)?.name || '';
+      const toName = cities.find(c => c.id === toId)?.name || '';
+      
+      const params = new URLSearchParams({ 
+        fromId, 
+        toId, 
+        fromName,
+        toName,
+        date 
+      });
       window.location.href = `/search-results?${params.toString()}`;
     }
   }
@@ -53,7 +83,6 @@ export default function SearchWidget() {
     <div className="relative z-20 -mt-20 pb-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl shadow-elevated p-6 md:p-8 border border-border/50">
-          {/* Section Title */}
           <div className="mb-6 text-center">
             <h2 className="text-lg md:text-xl font-bold text-text font-display">
               Search Buses
@@ -70,19 +99,20 @@ export default function SearchWidget() {
                 </label>
                 <select
                   id="search-from"
-                  value={from}
+                  value={fromId}
                   onChange={(e) => {
-                    setFrom(e.target.value);
+                    setFromId(e.target.value);
                     if (errors.from) setErrors((prev) => ({ ...prev, from: '' }));
                   }}
+                  disabled={loading}
                   className={`w-full px-4 py-3 bg-surface border rounded-xl text-text text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-all ${
                     errors.from ? 'border-red-accent' : 'border-border'
                   }`}
                 >
-                  <option value="">Select City</option>
-                  {CITIES.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
+                  <option value="">{loading ? 'Loading...' : 'Select City'}</option>
+                  {cities.map((city) => (
+                    <option key={`from-${city.id}`} value={city.id}>
+                      {city.name}
                     </option>
                   ))}
                 </select>
@@ -112,19 +142,20 @@ export default function SearchWidget() {
                 </label>
                 <select
                   id="search-to"
-                  value={to}
+                  value={toId}
                   onChange={(e) => {
-                    setTo(e.target.value);
+                    setToId(e.target.value);
                     if (errors.to) setErrors((prev) => ({ ...prev, to: '' }));
                   }}
+                  disabled={loading}
                   className={`w-full px-4 py-3 bg-surface border rounded-xl text-text text-sm focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-all ${
                     errors.to ? 'border-red-accent' : 'border-border'
                   }`}
                 >
-                  <option value="">Select City</option>
-                  {CITIES.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
+                  <option value="">{loading ? 'Loading...' : 'Select City'}</option>
+                  {cities.map((city) => (
+                    <option key={`to-${city.id}`} value={city.id}>
+                      {city.name}
                     </option>
                   ))}
                 </select>
@@ -160,7 +191,8 @@ export default function SearchWidget() {
               <div>
                 <button
                   type="submit"
-                  className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-red-accent to-red-dark text-white font-semibold rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                  disabled={loading}
+                  className="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-red-accent to-red-dark text-white font-semibold rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-70"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
