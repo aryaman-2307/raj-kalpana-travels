@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-
+import SeatLayout from '@/components/booking/SeatLayout';
+import PassengerForm from '@/components/booking/PassengerForm';
+import { dummyBusLayout, Seat } from '@/lib/mock/seatLayout';
 interface ApiRoute {
   id: number;
   name: string;
@@ -32,6 +34,23 @@ function SearchResultsContent() {
 
   const [sortBy, setSortBy] = useState<'price' | 'departure'>('price');
   const [busTypeFilter, setBusTypeFilter] = useState('all');
+
+  const [expandedRouteId, setExpandedRouteId] = useState<number | null>(null);
+  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
+
+  const handleSeatClick = (seat: Seat) => {
+    setSelectedSeats((prev) => {
+      const isSelected = prev.find((s) => s.id === seat.id);
+      if (isSelected) return prev.filter((s) => s.id !== seat.id);
+      if (prev.length >= 6) {
+        alert('You can only select up to 6 seats.');
+        return prev;
+      }
+      return [...prev, seat];
+    });
+  };
+
+  const totalFare = selectedSeats.reduce((sum, seat) => sum + seat.fare, 0);
 
   useEffect(() => {
     async function fetchRoutes() {
@@ -165,13 +184,42 @@ function SearchResultsContent() {
                     <p className="text-3xl font-bold text-[#E53935]">₹{parseFloat(route.fare_str) || route.fare_str}</p>
                     <p className="text-xs text-[#64748B]">per seat</p>
                     <button
-                      onClick={() => alert('Phase 2: Booking flow will go here. For now, redirecting to WhatsApp!')}
+                      onClick={() => {
+                        if (expandedRouteId === route.id) {
+                          setExpandedRouteId(null);
+                          setSelectedSeats([]);
+                        } else {
+                          setExpandedRouteId(route.id);
+                          setSelectedSeats([]);
+                        }
+                      }}
                       className="w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-[#E53935] to-[#C62828] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/25 transition-all"
                     >
-                      Book Ticket
+                      {expandedRouteId === route.id ? 'Close Seats' : 'Book Ticket'}
                     </button>
                   </div>
                 </div>
+
+                {expandedRouteId === route.id && (
+                  <div className="mt-6 pt-6 border-t border-[#E2E8F0] animate-in slide-in-from-top-4 duration-300">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                      <div className="lg:col-span-7 overflow-x-auto pb-4">
+                        <SeatLayout
+                          layout={dummyBusLayout}
+                          selectedSeats={selectedSeats.map(s => s.id)}
+                          onSeatClick={handleSeatClick}
+                        />
+                      </div>
+                      <div className="lg:col-span-5">
+                        <PassengerForm
+                          selectedSeats={selectedSeats}
+                          totalFare={totalFare}
+                          onProceedToPayment={() => alert('Proceeding to payment gateway... (Integration pending)')}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
