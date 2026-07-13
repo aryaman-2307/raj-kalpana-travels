@@ -157,7 +157,7 @@ function SearchResultsContent() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex-1">
                     <span className="inline-block bg-[#0F2B5B]/10 text-[#0F2B5B] text-xs font-semibold px-3 py-1 rounded-full mb-2">
-                      {route.busType}
+                      {route.bus_type}
                     </span>
                     <div className="flex items-center gap-4 mt-2">
                       <div>
