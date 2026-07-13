@@ -27,7 +27,7 @@ export default function PassengerForm({ selectedSeats, totalFare, onProceedToPay
     setPassengers((prev) => {
       const newPassengers = selectedSeats.map((seat) => {
         const existing = prev.find((p) => p.seatId === seat.id);
-        return existing || { seatId: seat.id, name: '', age: '', gender: '' };
+        return existing || ({ seatId: seat.id, name: '', age: '', gender: '' } as Passenger);
       });
       return newPassengers;
     });
