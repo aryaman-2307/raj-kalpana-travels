@@ -95,8 +95,7 @@ function SearchResultsContent() {
       return a.dep_time.localeCompare(b.dep_time);
     });
   }, [routes, sortBy, busTypeFilter]);
-
-  const busTypes = [...new Set(routes.map((r) => r.busType))];
+  const busTypes = [...new Set(routes.map((r) => r.bus_type))];
 
   return (
     <section className="min-h-screen bg-[#F8FAFC]">
