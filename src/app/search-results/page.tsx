@@ -84,7 +84,7 @@ function SearchResultsContent() {
   const results = useMemo(() => {
     let filtered = routes;
     if (busTypeFilter !== 'all') {
-      filtered = filtered.filter((r) => r.busType === busTypeFilter);
+      filtered = filtered.filter((r) => r.bus_type === busTypeFilter);
     }
     return filtered.sort((a, b) => {
       if (sortBy === 'price') {
