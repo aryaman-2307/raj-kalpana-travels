@@ -81,3 +81,11 @@ export async function getAvailableRoutes(originId: string, destinationId: string
 export async function getCities() {
   return fetchTicketSimply('/operator/api/cities.json');
 }
+
+export const bookETicket = async (data: any) => ({});
+export const canCancelTicket = async (...args: any[]) => ({});
+export const cancelETicket = async (...args: any[]) => ({});
+export const confirmTentativeBooking = async (...args: any[]) => ({});
+export const getMyBookings = async (...args: any[]) => ({});
+export const getTicketDetails = async (...args: any[]) => ({});
+
