@@ -73,3 +73,21 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-navy);
 }
+
+/* ─── Mobile tap targets ──────────────────────────────────────────────────────
+   Google's mobile-usability threshold is a 48px touch target. Footer, contact
+   bar and breadcrumb links render 16-24px tall by default, which is the most
+   common mobile-usability warning on this kind of site. Applied only under the
+   md breakpoint so desktop density is unchanged. */
+@media (max-width: 767px) {
+  footer a,
+  nav[aria-label='Breadcrumb'] a,
+  [data-contact-bar] a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  footer li > a {
+    width: 100%;
+  }
+}

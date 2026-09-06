@@ -15,6 +15,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Book via WhatsApp — Chat with Raj Kalpana Travels"
+      data-wa-float
       className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25D366] text-white rounded-full shadow-2xl hover:shadow-[#25D366]/40 hover:scale-105 active:scale-95 transition-all duration-300 group"
       style={{ boxShadow: '0 8px 32px rgba(37,211,102,0.45)' }}
     >

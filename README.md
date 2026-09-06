@@ -1,5 +1,19 @@
 # Raj Kalpana Travels — Next.js Website
 
+> **This repository is a design and SEO specification reference, not a deployable
+> product.** Bitla owns the booking engine, payment gateway and checkout; this
+> build exists so those pages can be reproduced inside the Bitla platform.
+>
+> **Start with [`BITLA-HANDOVER.md`](./BITLA-HANDOVER.md)** — it is the actual
+> deliverable. It covers URL structure, the 301 redirect map from the current
+> live site, metadata and canonical rules, structured data, indexing rules,
+> internal linking, the booking hand-off, the performance budget, analytics
+> events and a pass/fail launch checklist.
+>
+> Every departure time and fare in `src/data/routes.ts` is a snapshot of live
+> Bitla inventory taken on 3 September 2026, for design reference only. It must
+> be fetched from the booking system in production — see BITLA-HANDOVER.md §4.
+
 A production-quality, modern bus travel booking website for **Raj Kalpana Travels Pvt. Ltd.** built with Next.js 15, TypeScript, and Tailwind CSS.
 
 ## Tech Stack

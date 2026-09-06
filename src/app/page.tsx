@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/seo';
 import HeroSection from '@/components/home/HeroSection';
 import SearchWidget from '@/components/home/SearchWidget';
 import TrustBadges from '@/components/home/TrustBadges';
@@ -13,11 +14,11 @@ import TestimonialsSection from '@/components/home/TestimonialsSection';
 import OffersPreview from '@/components/home/OffersPreview';
 import CTABanner from '@/components/home/CTABanner';
 
-export const metadata: Metadata = {
-  title: 'Online Bus Ticket Booking | Raj Kalpana Travels Pvt. Ltd.',
-  description:
-    'Book affordable and comfortable bus tickets online with Raj Kalpana Travels. Trusted by 10 Lakh+ travelers. Live tracking, premium sleeper coaches, 24/7 support across 50+ cities.',
-};
+export const metadata: Metadata = generatePageMetadata(
+  'Online Bus Ticket Booking | AC Sleeper Buses',
+  'Book Bharat Benz 2+1 AC sleeper bus tickets from Delhi to Lucknow, Varanasi, Indore, Kanpur, Ujjain and Agra. Nightly departures, live GPS tracking, fares from ₹500.',
+  '/'
+);
 
 export default function HomePage() {
   return (
@@ -27,13 +28,18 @@ export default function HomePage() {
         <SearchWidget />
       </div>
       <TrustBadges />
-      <FeaturesGrid />
-      <AboutPreview />
-      <StatsCounter />
-      <HowItWorks />
-      <WhyChooseUs />
-      <GalleryPreview />
+      {/* Popular routes sit directly under the search box: this is the section
+          people came for, and it is the only path to the /routes/<slug> pages
+          Google ranks. It used to be tenth of thirteen, ~9,000px down a phone. */}
       <TopRoutes />
+      {/* The three value-proposition sections run consecutively so they read as
+          one argument instead of three restatements spread down the page. */}
+      <FeaturesGrid />
+      <WhyChooseUs />
+      <AboutPreview />
+      <HowItWorks />
+      <GalleryPreview />
+      <StatsCounter />
       <TestimonialsSection />
       <OffersPreview />
       <CTABanner />

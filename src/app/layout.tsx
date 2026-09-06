@@ -8,21 +8,25 @@ import WhatsAppButton from '@/components/layout/WhatsAppButton';
 
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  // Only the weights actually used. Every extra weight is another font file on
+  // the critical path; the live sample ships 178 KB of fonts across 4 files.
+  weight: ['400', '600'],
   variable: '--font-inter',
   display: 'swap',
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
+  weight: ['700', '800'],
   variable: '--font-plus-jakarta-sans',
   display: 'swap',
 });
 
 const COMPANY_NAME = 'Raj Kalpana Travels Pvt. Ltd.';
 const COMPANY_TAGLINE = 'Your Destination Partner';
-const BASE_URL = 'https://rajkalpanatravels.com';
+// Must match the host used by lib/seo.ts, app/sitemap.ts and app/robots.ts,
+// otherwise relative OG images resolve against a different origin than canonicals.
+const BASE_URL = 'https://www.rajkalpanatravels.com';
 
 export const metadata: Metadata = {
   title: {
@@ -104,7 +108,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
+    <html lang="en-IN" className={`${inter.variable} ${plusJakartaSans.variable}`}>
       <head>
         <script
           type="application/ld+json"

@@ -11,6 +11,7 @@ export const COMPANY_TAGLINE = 'Your Destination Partner';
 
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },
+  { label: 'Routes', href: '/routes' },
   { label: 'Booking', href: '/booking' },
   { label: 'Manage Bookings', href: '/manage-bookings' },
   { label: 'Schedules', href: '/schedules' },
@@ -24,6 +25,7 @@ export const NAV_LINKS = [
 
 export const FOOTER_QUICK_LINKS = [
   { label: 'Home', href: '/' },
+  { label: 'Routes', href: '/routes' },
   { label: 'About Us', href: '/about' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'Blog', href: '/blog' },
@@ -34,16 +36,16 @@ export const FOOTER_QUICK_LINKS = [
 export const FOOTER_POLICY_LINKS = [
   { label: 'Privacy Policy', href: '/privacy-policy' },
   { label: 'Terms & Conditions', href: '/terms-and-conditions' },
-  { label: 'Cancellation Policy', href: '/cancellation-policy' },
-  { label: 'Refund Policy', href: '/refund-policy' },
-  { label: 'FAQ', href: '/faq' },
+  { label: 'Cancellation Policy', href: '/cancellation-refund-policy' },
+  { label: 'Refund Status', href: '/refund-status' },
+  { label: 'FAQs', href: '/faqs' },
 ] as const;
 
 export const FOOTER_BOOKING_LINKS = [
   { label: 'Search Buses', href: '/booking' },
   { label: 'Manage Booking', href: '/manage-bookings' },
   { label: 'Schedules', href: '/schedules' },
-  { label: 'Track My Bus', href: '/track' },
+  { label: 'Track My Bus', href: '/track-shipment' },
   { label: 'Offers', href: '/offers' },
 ] as const;
 
